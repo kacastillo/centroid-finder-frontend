@@ -43,3 +43,27 @@ centroid-finder-frontend/ (new repo: React)
 └── README.md             setup instructions + screenshots
 At runtime you’ll have two things running side by side. The Express server runs from centroid-finder/server on port 3000, and the React dev server runs from the new repo on a different port, such as 5173 if you use Vite. The React app calls Express over HTTP, which is why you’ll need CORS or a dev proxy. The repos stay independent of each other.
 The new repo needs a React setup (Vite is the quickest), plus React Router and Material UI. You’ll also write the JavaScript version of your centroid logic there, since it runs in the browser.
+
+
+Architecture : 
+
+src/
+├── main.jsx                 BrowserRouter + MUI ThemeProvider
+├── App.jsx                  <Sky /> plus the three <Route>s
+├── theme.js                 purple primary, cyan/yellow accents
+├── api.js                   fetch helpers for the 4 endpoints
+├── pages/
+│   ├── Home.jsx             the bordered "Videos" cloud link
+│   ├── VideoChooser.jsx     /videos, grid of VideoCards
+│   └── Preview.jsx          /preview/:filename
+├── components/
+│   ├── Sky.jsx              stars and clouds background
+│   ├── VideoCard.jsx        thumbnail + filename, links to preview
+│   ├── withLoading.jsx      your HOC (loading and error wrapper)
+│   ├── BinarizedCanvas.jsx  draws the binarized image + centroid dot
+│   └── JobStatus.jsx        progress bar, then the CSV link
+├── lib/
+│   ├── binarize.js          color distance vs. threshold
+│   └── findCentroid.js      your Java connected-group logic in JS
+├── mock/                    mock video list, status responses
+└── tests/
