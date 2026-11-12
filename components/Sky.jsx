@@ -1,3 +1,9 @@
+/**
+ * This is create using MUI - which helps implement the sky theme that has moving clouds and stars. This will be the overall
+ * layout for the remainder of the project. The main goal is to have a drop down cloud in the middle of the screen 
+ * that eventually shows a border that says 'Video'.
+ */
+
 // components/Sky.jsx
 import { useMemo } from "react";
 import "./sky.css";
