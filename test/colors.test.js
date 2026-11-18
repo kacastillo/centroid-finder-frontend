@@ -1,3 +1,4 @@
+import { colorDistance, hexToRgb, rgbToHex } from "../src/lib/colors.js";
 /**
  * Tests for src/lib/colors.js, ported from EuclideanColorDistanceTest.java.
  * Same colors, same expected answers as the Java tests.
@@ -62,5 +63,20 @@ describe("hexToRgb", () => {
 
   it("rejects a bad color", () => {
     assert.throws(() => hexToRgb("zz"));
+  });
+});
+
+describe("rgbToHex", () => {
+  it("turns red, green, blue into a hex color", () => {
+    assert.equal(rgbToHex(92, 0, 5), "#5c0005");
+  });
+
+  it("pads single digits with a 0", () => {
+    assert.equal(rgbToHex(0, 0, 0), "#000000");
+  });
+
+  it("is the opposite of hexToRgb", () => {
+    const { r, g, b } = hexToRgb("#a1b2c3");
+    assert.equal(rgbToHex(r, g, b), "#a1b2c3");
   });
 });

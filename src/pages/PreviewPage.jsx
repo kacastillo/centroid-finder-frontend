@@ -96,10 +96,16 @@ export default function PreviewPage() {
           {/* Original and binarized frames side by side (stacked on small screens) */}
           <Stack direction={{ xs: "column", md: "row" }} spacing={3} sx={{ mb: 3 }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h6" gutterBottom>
-                Original frame
+              <Typography variant="h6">Original frame</Typography>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                Tip: click the salamander to pick its color
               </Typography>
-              <ThumbnailCanvas image={image} color={color} threshold={threshold} />
+              <ThumbnailCanvas
+                image={image}
+                color={color}
+                threshold={threshold}
+                onPickColor={setColor}
+              />
             </Box>
 
             <Box sx={{ flex: 1 }}>

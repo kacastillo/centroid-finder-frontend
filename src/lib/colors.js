@@ -27,3 +27,12 @@ export function colorDistance(r1, g1, b1, r2, g2, b2) {
   const db = b1 - b2;
   return Math.sqrt(dr * dr + dg * dg + db * db);
 }
+
+/**
+ * Turns red, green, and blue (each 0 to 255) into a hex color like "#5c0005".
+ * The opposite of hexToRgb.
+ */
+export function rgbToHex(r, g, b) {
+  // toString(16) turn a num into hex (92 -> "5c") n padStart(2, "0") make single digits 2 characters (0 -> "00")
+  return "#" + [r, g, b].map((value) => value.toString(16).padStart(2, "0")).join("");
+}
