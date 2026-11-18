@@ -9,8 +9,11 @@ import Typography from "@mui/material/Typography";
 const MAX_THRESHOLD = 442;
 
 /*
- * Labels on the top row, controls on the row below, so "Target color"
- * lines up with "Threshold" and the swatch lines up with the slider.
+ * Two groups side by side: the color group takes only the width it needs,
+ * and the threshold group takes the rest. Labels sit on the top row and
+ * controls on the row below, so the two labels line up and the swatch
+ * lines up with the slider.
+ *
  * On small screens it becomes one column: color label, color picker,
  * threshold label, slider.
  */
@@ -29,13 +32,24 @@ const gridSx = {
 const controlRowSx = {
   display: "flex",
   alignItems: "center",
-  minHeight: 44,
+  minHeight: 48,
 };
 
-// Small, soft label text above each control
+// Small, bold label text above each control
 const labelSx = {
   fontWeight: 700,
   fontSize: "0.9rem",
+};
+
+// The small pill that shows a value (the hex code, the threshold number)
+const valuePillSx = {
+  fontFamily: "monospace",
+  fontSize: "0.85rem",
+  lineHeight: 1.6,
+  px: 1.25,
+  borderRadius: 999,
+  bgcolor: "rgba(255, 255, 255, 0.7)",
+  border: "1px solid rgba(185, 160, 240, 0.5)",
 };
 
 /**
@@ -54,7 +68,7 @@ export default function ControlsPanel({ color, threshold, onColorChange, onThres
       <Box sx={{ ...controlRowSx, gridArea: "colorControl", gap: 1.5 }}>
         {/*
          * The browser's built-in color picker; its value looks like "#5c0005".
-         * Styled as a rounded swatch with a soft border.
+         * Styled as a rounded swatch, 44px tall so it's easy to tap.
          */}
         <Box
           component="input"
@@ -64,45 +78,45 @@ export default function ControlsPanel({ color, threshold, onColorChange, onThres
           value={color}
           onChange={(e) => onColorChange(e.target.value)}
           sx={{
-            width: 44,
-            height: 36,
+            width: 56,
+            height: 44,
             p: 0.5,
             border: "1px solid rgba(185, 160, 240, 0.7)",
-            borderRadius: "10px",
+            borderRadius: "12px",
             bgcolor: "rgba(255, 255, 255, 0.8)",
             cursor: "pointer",
+            "&:focus-visible": {
+              outline: "3px solid #7b5fc7",
+              outlineOffset: 2,
+            },
             // Rounds the color inside the picker in Chrome/Edge and Safari
             "&::-webkit-color-swatch-wrapper": { p: 0 },
-            "&::-webkit-color-swatch": { border: "none", borderRadius: "6px" },
+            "&::-webkit-color-swatch": { border: "none", borderRadius: "8px" },
             // Same for Firefox
-            "&::-moz-color-swatch": { border: "none", borderRadius: "6px" },
+            "&::-moz-color-swatch": { border: "none", borderRadius: "8px" },
           }}
         />
 
-        {/* The hex value in a small pill */}
-        <Typography
-          variant="body2"
-          sx={{
-            fontFamily: "monospace",
-            px: 1.25,
-            py: 0.5,
-            borderRadius: 999,
-            bgcolor: "rgba(255, 255, 255, 0.7)",
-            border: "1px solid rgba(185, 160, 240, 0.5)",
-          }}
-        >
+        {/* The hex value; aria-hidden because the picker already reports its color */}
+        <Typography component="span" aria-hidden="true" sx={valuePillSx}>
           {color}
         </Typography>
       </Box>
 
-      <Typography id="threshold-label" sx={{ ...labelSx, gridArea: "thresholdLabel" }}>
-        Threshold: {threshold}
-      </Typography>
+      {/* The label and the current number, kept together on one line */}
+      <Box sx={{ gridArea: "thresholdLabel", display: "flex", alignItems: "center", gap: 1 }}>
+        <Typography id="threshold-label" sx={labelSx}>
+          Threshold
+        </Typography>
+        <Typography component="span" aria-hidden="true" sx={valuePillSx}>
+          {threshold}
+        </Typography>
+      </Box>
 
       {/*
        * onChange fires while dragging, so the preview updates live.
-       * The slider starts right under its label; at either end the thumb
-       * sits in the panel's padding, so it's never cut off.
+       * Keyboard: arrow keys move by 1, Shift + arrows by 10, Home/End jump to the ends.
+       * At either end the thumb sits in the panel's padding, so it's never cut off.
        */}
       <Box sx={{ ...controlRowSx, gridArea: "thresholdControl" }}>
         <Slider
@@ -112,6 +126,7 @@ export default function ControlsPanel({ color, threshold, onColorChange, onThres
           min={0}
           max={MAX_THRESHOLD}
           step={1}
+          shiftStep={10}
           valueLabelDisplay="auto"
           onChange={(e, value) => onThresholdChange(value)}
         />
