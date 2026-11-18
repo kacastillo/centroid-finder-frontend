@@ -27,6 +27,16 @@ const PIXEL_PLUM = "#493267";
 const PIXEL_CREAM = "#fff5da";
 const PIXEL_CREAM_HOVER = "#fffaeb";
 
+/**
+ * The pastel pink fill for a pixel-art main button. Spread it into the sx
+ * of the button or of a box around it:  <Box sx={{ ...PIXEL_PINK_FILL }}>
+ * Cream is the default, so cream buttons need nothing extra.
+ */
+export const PIXEL_PINK_FILL = {
+  "--pixel-fill": "#f4a8c4",
+  "--pixel-fill-hover": "#f8bdd3",
+};
+
 // One "pixel" of the button's stepped edge, in screen pixels
 const PX = 3;
 
@@ -150,8 +160,12 @@ const theme = createTheme({
 
     MuiButton: {
       styleOverrides: {
-        // Every button: fully rounded, with a clear focus ring for keyboard users
+        /*
+         * Every button: fully rounded, at least 44px tall so it's easy to tap,
+         * with a clear focus ring for keyboard users.
+         */
         root: {
+          minHeight: 44,
           borderRadius: 999,
           paddingLeft: 20,
           paddingRight: 20,
@@ -291,11 +305,74 @@ const theme = createTheme({
     },
 
     // Alerts get the same rounded corners and soft border as panels
+    /*
+     * Status messages ("Processing...", "Done!", errors): soft frosted pastels
+     * with plum text, instead of MUI's default mint green and blue, so they
+     * match the lavender sky.
+     */
     MuiAlert: {
       styleOverrides: {
         root: {
           borderRadius: 16,
           border: `1px solid ${LAVENDER_BORDER}`,
+          backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
+          boxShadow: "0 8px 24px rgba(91, 63, 170, 0.10)",
+          alignItems: "center",
+
+          /*
+           * Colors per type. MUI 9 marks each alert with a variant class
+           * (MuiAlert-standard) and a color class (MuiAlert-colorSuccess, ...).
+           */
+
+          // "Done!": warm cream, like the Choose a video button
+          "&.MuiAlert-standard.MuiAlert-colorSuccess": {
+            backgroundColor: "rgba(255, 248, 225, 0.88)",
+            color: PLUM,
+            "& .MuiAlert-icon": { color: LAVENDER_DEEP },
+          },
+
+          // "Processing...": frosted white
+          "&.MuiAlert-standard.MuiAlert-colorInfo": {
+            backgroundColor: "rgba(255, 255, 255, 0.72)",
+            color: PLUM,
+            "& .MuiAlert-icon": { color: LAVENDER_DEEP },
+          },
+
+          // Errors: soft rose, still clearly a warning
+          "&.MuiAlert-standard.MuiAlert-colorError": {
+            backgroundColor: "rgba(253, 232, 238, 0.9)",
+            borderColor: "rgba(214, 110, 145, 0.55)",
+            color: "#6e1f3c",
+            "& .MuiAlert-icon": { color: "#b8325f" },
+          },
+
+          "&.MuiAlert-standard.MuiAlert-colorWarning": {
+            backgroundColor: "rgba(255, 244, 214, 0.9)",
+            color: "#5c3d0a",
+            "& .MuiAlert-icon": { color: "#a8740f" },
+          },
+        },
+      },
+    },
+
+    /*
+     * The processing bar: a soft lavender track with a deeper lavender bar.
+     * With reduced motion, the moving bar slows right down instead of sliding fast.
+     */
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          height: 8,
+          borderRadius: 999,
+          backgroundColor: "rgba(201, 182, 255, 0.45)",
+        },
+        bar: {
+          borderRadius: 999,
+          backgroundColor: LAVENDER_DEEP,
+          [REDUCED_MOTION]: {
+            animationDuration: "6s",
+          },
         },
       },
     },
