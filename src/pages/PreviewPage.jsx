@@ -8,6 +8,8 @@ import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import { thumbnailUrl } from "../api/api";
+import useJobStatus from "../hooks/useJobStatus";
+import { PIXEL_PINK_FILL } from "../theme";
 import ControlsPanel from "../components/ControlsPanel";
 import ThumbnailCanvas from "../components/ThumbnailCanvas";
 import BinarizedCanvas from "../components/BinarizedCanvas";
@@ -57,6 +59,20 @@ const framesGridSx = {
   alignItems: "start",
 };
 
+/*
+ * The process / download area: one narrow column, centered under the frames.
+ */
+const actionColumnSx = {
+  mt: 5,
+  mx: "auto",
+  maxWidth: 520,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: 2,
+  textAlign: "center",
+};
+
 /**
  * Route: /preview/:filename
  *
@@ -71,7 +87,36 @@ export default function PreviewPage() {
   const [imageError, setImageError] = useState("");
   const [color, setColor] = useState(DEFAULT_COLOR);
   const [threshold, setThreshold] = useState(DEFAULT_THRESHOLD);
-  const [jobId, setJobId] = useState(null);
+
+  /*
+   * The processing job, and the color and threshold it was started with.
+   * null means nothing has been processed yet (or the user chose Reprocess).
+   */
+  const [job, setJob] = useState(null);
+  const { status, result, error } = useJobStatus(job ? job.id : null);
+
+  /*
+   * ProcessButton calls this after the server accepts the job.
+   * The color and threshold here are the ones from the click that started it.
+   */
+  function handleJobStarted(jobId) {
+    setJob({ id: jobId, color, threshold });
+  }
+
+  // Back to "ready to process". The video, color, and threshold all stay as they are.
+  function handleReprocess() {
+    setJob(null);
+  }
+
+  // True when the finished results were made with different settings than the ones shown now
+  const outdated = job !== null && (job.color !== color || job.threshold !== threshold);
+
+  /*
+   * Configure -> Process -> Download:
+   * the process button shows until a job is done with the current settings,
+   * then Download CSV (inside JobStatus) takes its place.
+   */
+  const showProcessButton = !(status === "done" && !outdated);
 
   /*
    * Load the first frame whenever the filename changes.
@@ -132,9 +177,11 @@ export default function PreviewPage() {
           {/* Original and binarized frames side by side (stacked on small screens) */}
           <Box sx={framesGridSx}>
             <Box sx={{ gridArea: "origHead" }}>
-              <Typography variant="h6">Original frame</Typography>
+              <Typography variant="h6" component="h2">
+                Original frame
+              </Typography>
               <Typography variant="body2" color="text.secondary">
-                Tip: click the salamander to pick its color
+                Tip: click the salamander to pick its color.
               </Typography>
             </Box>
 
@@ -147,41 +194,53 @@ export default function PreviewPage() {
               />
             </Box>
 
-            <Typography variant="h6" sx={{ gridArea: "binHead", mt: { xs: 2, md: 0 } }}>
-              Binarized frame
-            </Typography>
+            {/*
+             * This caption matches binarize.js: a pixel turns white when its
+             * color distance to the target is less than the threshold.
+             */}
+            <Box sx={{ gridArea: "binHead", mt: { xs: 2, md: 0 } }}>
+              <Typography variant="h6" component="h2">
+                Binarized frame
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                White pixels are within the threshold of the target color.
+              </Typography>
+            </Box>
 
             <Box sx={{ gridArea: "binFrame", ...frameSx }}>
               <BinarizedCanvas image={image} color={color} threshold={threshold} />
             </Box>
           </Box>
 
-          {/*
-           * The process button, centered under both frames.
-           * The two --pixel-fill variables make its pixel-art fill pink
-           * instead of the default cream (see "contained" in theme.js).
-           */}
-          <Box
-            sx={{
-              "--pixel-fill": "#f4a8c4",
-              "--pixel-fill-hover": "#f8bdd3",
-              mt: 5,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-            }}
-          >
-            <ProcessButton
-              filename={filename}
-              color={color}
-              threshold={threshold}
-              onJobStarted={setJobId}
-            />
-          </Box>
+          {/* Configure → Process → Download, centered under both frames */}
+          <Box component="section" aria-label="Process video" sx={actionColumnSx}>
+            {showProcessButton && (
+              // PIXEL_PINK_FILL makes this pixel-art button pink instead of cream
+              <Box sx={{ ...PIXEL_PINK_FILL, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <ProcessButton
+                  filename={filename}
+                  color={color}
+                  threshold={threshold}
+                  onJobStarted={handleJobStarted}
+                  disabled={status === "processing"}
+                />
+              </Box>
+            )}
 
-          <Box sx={{ mt: 3 }}>
-            <JobStatus jobId={jobId} />
+            {!job && (
+              <Typography variant="body2" color="text.secondary">
+                Happy with the preview? Process the whole video with these settings.
+              </Typography>
+            )}
+
+            <JobStatus
+              status={status}
+              result={result}
+              error={error}
+              used={job}
+              outdated={outdated}
+              onReprocess={handleReprocess}
+            />
           </Box>
         </>
       )}
