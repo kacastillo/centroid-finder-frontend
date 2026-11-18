@@ -1,5 +1,111 @@
-/**
- * Animated sky background: twinkling stars and drifting clouds.
- * Built with plain CSS animations (sky.css), shown behind every page.
- * Star and cloud positions are random, but generated only once.
+/*
+ * The background layer. "fixed" + "inset: 0" makes it fill the screen
+ * and stay put while the page scrolls; z-index -1 puts it behind everything.
  */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+
+  /*
+   * Two layers:
+   * 1. A soft pink glow rising from the bottom, like the horizon
+   *    in the reference image.
+   * 2. A smooth gradient from medium lavender at the top
+   *    to light pink-lavender at the bottom.
+   */
+  background:
+    radial-gradient(
+      ellipse 110% 45% at 50% 105%,
+      rgba(247, 200, 230, 0.7) 0%,
+      rgba(247, 200, 230, 0) 70%
+    ),
+    linear-gradient(
+      180deg,
+      #b7a1e4 0%,
+      #c4b0ea 25%,
+      #d4c2f0 50%,
+      #e4d3f4 75%,
+      #f2def2 100%
+    );
+}
+
+/* Every star or sparkle is placed by its top/left from Sky.jsx */
+.star,
+.sparkle {
+  position: absolute;
+}
+
+/*
+ * A round star: a soft glint instead of a hard dot. A bright white center
+ * fades out through a hint of lavender to clear, so it looks like a point
+ * of light rather than a white pixel.
+ */
+.star {
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    #ffffff 0%,
+    #ffffff 16%,
+    rgba(250, 246, 255, 0.85) 26%,
+    rgba(225, 210, 255, 0.4) 44%,
+    rgba(200, 180, 245, 0.12) 60%,
+    rgba(200, 180, 245, 0) 72%
+  );
+  opacity: 0.9;
+}
+
+/*
+ * A four-point sparkle in pale butter yellow.
+ * The glow (drop-shadow) is on the outer span and the star shape is on
+ * ::before, because clip-path would otherwise cut the glow off.
+ */
+.sparkle {
+  filter: drop-shadow(0 0 3px rgba(255, 205, 100, 0.9));
+  opacity: 0.95;
+}
+
+/* The star shape: a yellow square cut into a thin four-point star */
+.sparkle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #fff8cc 0%, #ffe27a 100%);
+  clip-path: polygon(
+    50% 0%,
+    58% 42%,
+    100% 50%,
+    58% 58%,
+    50% 100%,
+    42% 58%,
+    0% 50%,
+    42% 42%
+  );
+}
+
+/* Twinkling stars and sparkles slowly fade in and out, each on its own timing */
+.twinkle {
+  animation: twinkle var(--duration) ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+/* For people who turn off animations in their system settings */
+@media (prefers-reduced-motion: reduce) {
+  .twinkle {
+    animation: none;
+  }
+}

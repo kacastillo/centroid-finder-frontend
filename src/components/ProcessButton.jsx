@@ -27,7 +27,7 @@ export default function ProcessButton({ filename, color, threshold, onJobStarted
 
   return (
     <>
-      <Button onClick={handleClick} disabled={submitting || disabled}>
+      <Button variant="contained" onClick={handleClick} disabled={submitting || disabled}>
         Process Video with These Settings
       </Button>
       {error && (

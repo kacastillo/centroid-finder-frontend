@@ -1,11 +1,9 @@
+import assert from "node:assert/strict";
 import { colorDistance, hexToRgb, rgbToHex } from "../src/lib/colors.js";
 /**
  * Tests for src/lib/colors.js, ported from EuclideanColorDistanceTest.java.
  * Same colors, same expected answers as the Java tests.
  */
-import assert from "node:assert/strict";
-import { colorDistance, hexToRgb } from "../src/lib/colors.js";
-
 // Same tolerance as the Java tests (assertEquals(expected, actual, 0.0001))
 function assertClose(actual, expected) {
   assert.ok(Math.abs(actual - expected) < 0.0001, `expected ${expected}, got ${actual}`);
