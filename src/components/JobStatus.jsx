@@ -26,7 +26,7 @@ export default function JobStatus({ jobId }) {
         <Alert severity="success" sx={{ mb: 2 }}>
           Done! Your results are ready.
         </Alert>
-        <Button variant="outlined" component="a" href={result} download>
+        <Button variant="contained" component="a" href={result} download>
           Download CSV
         </Button>
       </Box>
