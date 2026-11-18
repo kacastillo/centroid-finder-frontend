@@ -1,6 +1,18 @@
-// converts hex color to rgb object 
+/**
+ * Converts a hex color like "#5c0005" or "5C0005" into { r, g, b },
+ * each from 0 to 255. Same idea as toRgb() in the Java version.
+ */
 export function hexToRgb(hex) {
   const h = hex.replace(/^#/, "");
+
+  // Must be exactly 6 hex digits, or every color after this would be NaN
+  // without this, bad color makes ever distance NaN -> < threshold is false, 
+  // then the whole image turn black with no error (without saying anything or letting u know)
+  // this if statement will give you a clear msg if it happend
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) {
+    throw new Error(`Invalid hex color: ${hex}`);
+  }
+
   return {
     r: parseInt(h.slice(0, 2), 16),
     g: parseInt(h.slice(2, 4), 16),
