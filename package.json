@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "vite --mode api",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test:logic": "mocha \"test/**/*.test.js\""
+    "test:logic": "mocha \"test/**/*.test.js\"",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
