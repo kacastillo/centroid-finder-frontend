@@ -25,7 +25,6 @@ so the preview matches what the server produces.
 
 ## Screenshots
 
-<!-- TODO: add screenshots -->
 ![Video Chooser](docs/screenshots/video-chooser.png)
 ![Preview page](docs/screenshots/preview.png)
 ![Finished job with CSV link](docs/screenshots/job-done.png)
