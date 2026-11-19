@@ -1,6 +1,6 @@
 /** using ai for a fake server Fake server data, used when USE_MOCK is on.*/
 
-export const mockVideos = ["salamander1.mp4", "salamander2.mov", "forest_intro.mp4"];
+export const mockVideos = ["test-red-square.mp4", "salamander2.mov", "forest_intro.mp4"];
 
 // a small drawn "frame", so the cards have a picture without needing the server
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180"> 
